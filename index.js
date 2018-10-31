@@ -4,10 +4,13 @@ const configFile = process.env.CONFIG_FILE || "/tmp/vault.txt"
 const env = process.env.ENV || "dev"
 const vaultAddr = process.env.VAULT_ADDR || "http://127.0.0.1:8200"
 const vaultToken = process.env.VAULT_TOKEN || ""
+const project = process.env.PROJECT || "test"
 
-console.log("CONFIG_FILE:", configFile)
-console.log("ENV:", env)
 console.log("VAULT_ADDR:", vaultAddr)
+console.log("PROJECT:", project)
+console.log("ENV:", env)
+console.log("CONFIG_FILE:", configFile)
+console.log("---------------------------")
 
 const instance = axios.create({
   baseURL: vaultAddr+'/v1',
@@ -21,10 +24,10 @@ async function get(path){
 }
 
 async function start (){
-  const dataEnv = await get('/secret/test/'+env)
+  const dataEnv = await get('/secret/'+project+'/'+env)
   const config_path = dataEnv.config_path
   const type = dataEnv.type
-  const dataConfig = await get('/secret/test/'+env+'/config')
+  const dataConfig = await get('/secret/'+project+'/'+env+'/config')
   const config = dataConfig.config
   const resultConfig = env + ":\n" + config
   console.log('type:', type)
