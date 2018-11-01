@@ -28,13 +28,11 @@ async function get(path){
 }
 
 async function configFileSave (){
-  const dataEnv = await get('/secret/'+project+'/'+env)
-  const config_path = dataEnv.config_path
-  const config_type = dataEnv.config_type
+  const dataHelm = await get('/secret/'+project+'/'+env+'/helm')
+  const config_path = dataHelm.config_path
   const dataConfig = await get('/secret/'+project+'/'+env+'/config')
   const config = dataConfig.config
   const resultConfig = env + ":\n" + config
-  console.log('config_type:', config_type)
   console.log('config_path:', config_path)
   console.log('config:\n', config)
   fs.writeFileSync(configFile, resultConfig)
@@ -42,8 +40,8 @@ async function configFileSave (){
 
 
 async function helmFileSave (){
-  const dataEnv = await get('/secret/'+project+'/'+env)
-  const config_path = dataEnv.config_path
+  const dataHelm = await get('/secret/'+project+'/'+env+'/helm')
+  const config_path = dataHelm.config_path
   const resultConfig = `
 config_path: ${config_path}
 stage: ${env}
