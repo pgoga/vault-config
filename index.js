@@ -5,6 +5,7 @@ const env = process.env.ENV || "dev"
 const vaultAddr = process.env.VAULT_ADDR || "http://127.0.0.1:8200"
 const vaultToken = process.env.VAULT_TOKEN || ""
 const project = process.env.PROJECT || "test"
+const toTO = process.env.TO_DO || "config"
 
 console.log("VAULT_ADDR:", vaultAddr)
 console.log("PROJECT:", project)
@@ -23,22 +24,41 @@ async function get(path){
   return response.data.data
 }
 
-async function start (){
+async function configFileSave (){
   const dataEnv = await get('/secret/'+project+'/'+env)
   const config_path = dataEnv.config_path
-  const type = dataEnv.type
+  const config_type = dataEnv.config_type
   const dataConfig = await get('/secret/'+project+'/'+env+'/config')
   const config = dataConfig.config
   const resultConfig = env + ":\n" + config
-  console.log('type:', type)
+  console.log('config_type:', config_type)
   console.log('config_path:', config_path)
   console.log('config:\n', config)
   fs.writeFileSync(configFile, resultConfig)
 }
 
+
+async function helmFileSave (){
+  const dataEnv = await get('/secret/'+project+'/'+env)
+  const config_path = dataEnv.config_path
+  const resultConfig = `
+config_path: ${config_path}
+stage: ${env}
+  `
+  console.log(resultConfig)
+  fs.writeFileSync(configFile, resultConfig)
+}
+
 ;(async function(){
   try {
-    await start()
+    switch (toTO) {
+      case "helm":
+        await helmFileSave()
+        break;
+      default:
+        await configFileSave()
+    }
+
   } catch (e) {
     console.log(e)
     console.log(e.response.status)
