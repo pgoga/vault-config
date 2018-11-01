@@ -1,16 +1,19 @@
+var argv = require('minimist')(process.argv.slice(2));
 const axios = require('axios');
 const fs = require('fs');
-const configFile = process.env.CONFIG_FILE || "/tmp/vault.txt"
-const env = process.env.ENV || "dev"
-const vaultAddr = process.env.VAULT_ADDR || "http://127.0.0.1:8200"
-const vaultToken = process.env.VAULT_TOKEN || ""
-const project = process.env.PROJECT || "test"
-const toTO = process.env.TO_DO || "config"
 
-console.log("VAULT_ADDR:", vaultAddr)
-console.log("PROJECT:", project)
-console.log("ENV:", env)
-console.log("CONFIG_FILE:", configFile)
+const configFile = argv["config-file"] || "/tmp/vault.txt"
+const env = argv["env"] || "dev"
+const vaultAddr = argv["vault-addr"] || "http://127.0.0.1:8200"
+const vaultToken = argv["vault-token"] || ""
+const project = argv["project"] || "test"
+const toDo = argv["to-do"] || "config"
+
+console.log("vault-addr:", vaultAddr)
+console.log("project:", project)
+console.log("env:", env)
+console.log("config-file:", configFile)
+console.log("to-do:", toDo)
 console.log("---------------------------")
 
 const instance = axios.create({
@@ -51,7 +54,7 @@ stage: ${env}
 
 ;(async function(){
   try {
-    switch (toTO) {
+    switch (toDo) {
       case "helm":
         await helmFileSave()
         break;
